@@ -36,8 +36,6 @@ exports.register = async (req, res) => {
     password: hashedPassword,
   });
 
-  console.log(newUser);
-
   if (newUser) {
     // Generate access token
     const accessToken = generateToken(
@@ -46,7 +44,7 @@ exports.register = async (req, res) => {
       newUser.email
     );
 
-    res.status(201).json({ message: "user created successfuly", accessToken });
+    res.status(201).json({ message: "User created successfuly", accessToken });
   } else {
     res.status(400).json({ error: "Invalid user data received" });
   }
@@ -71,8 +69,6 @@ exports.login = async (req, res) => {
   if (!foundUser) {
     return res.status(401).json({ error: "No user exists with this email" });
   }
-
-  console.log(foundUser._id.toString());
 
   const match = await comparePassword(password, foundUser.password);
   if (!match) return res.status(401).json({ error: "Passwords not match" });
