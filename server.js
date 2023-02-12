@@ -5,6 +5,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const userRoute = require("./routes/user.route");
 const productRoute = require("./routes/product.route");
+const reviewRoute = require("./routes/review.route");
 const app = express();
 
 const PORT = process.env.PORT || 4000;
@@ -26,6 +27,7 @@ app.get("/", (req, res) => {
 
 app.use("/auth", userRoute);
 app.use("/api/products", productRoute);
+app.use("/api/reviews", reviewRoute);
 
 app.listen(PORT, () => {
   console.log(`Server listening, visit: http://localhost:${PORT}`);
