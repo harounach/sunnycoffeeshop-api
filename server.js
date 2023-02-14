@@ -3,6 +3,8 @@ dotenv.config();
 
 const express = require("express");
 const mongoose = require("mongoose");
+const cors = require("cors");
+const corsOptions = require("./config/cors.config");
 const userRoute = require("./routes/user.route");
 const productRoute = require("./routes/product.route");
 const reviewRoute = require("./routes/review.route");
@@ -18,6 +20,7 @@ mongoose.connect(process.env.MONGODB_URI, () => {
 });
 
 // Apply middlewares
+app.use(cors(corsOptions));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
