@@ -11,13 +11,22 @@ const { seedData } = require("../utils/data");
 exports.getProducts = async (req, res) => {
   const { search, perpage = 8, page = 1, filter, order = -1 } = req.query;
 
-  const products = await ProductModel.find()
+  const searchFilter = search
+    ? {
+        title: {
+          $regex: search,
+          $options: "i",
+        },
+      }
+    : {};
+
+  const products = await ProductModel.find(searchFilter)
     .sort({ createdAt: order })
     .limit(perpage * 1)
     .skip((page - 1) * perpage)
     .lean()
     .exec();
-  const count = await ProductModel.countDocuments();
+  const count = await ProductModel.countDocuments(searchFilter);
   const pages = Math.ceil(count / perpage);
   res.json({
     message: "Get products",
