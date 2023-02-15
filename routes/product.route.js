@@ -21,4 +21,7 @@ router.route("/:id").delete(productController.deleteProduct);
 /** @route /products/:id/reviews */
 router.route("/:id/reviews").get(reviewController.getReviews);
 
+/** @route /products/seed */
+router.route("/seed").post(productController.seedProducts);
+
 module.exports = router;

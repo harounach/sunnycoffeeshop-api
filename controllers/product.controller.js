@@ -1,5 +1,6 @@
 const { Request, Response } = require("express");
 const ProductModel = require("../models/product.model");
+const { seedData } = require("../utils/data");
 
 /**
  * Get products
@@ -8,8 +9,22 @@ const ProductModel = require("../models/product.model");
  * @param {Response} res
  */
 exports.getProducts = async (req, res) => {
-  const products = await ProductModel.find().lean().exec();
-  res.json({ message: "Get products", data: products });
+  const { search, perpage = 8, page = 1, filter, order = -1 } = req.query;
+
+  const products = await ProductModel.find()
+    .sort({ createdAt: order })
+    .limit(perpage * 1)
+    .skip((page - 1) * perpage)
+    .lean()
+    .exec();
+  const count = await ProductModel.countDocuments();
+  const pages = Math.ceil(count / perpage);
+  res.json({
+    message: "Get products",
+    pages,
+    page,
+    data: products,
+  });
 };
 
 /**
@@ -135,5 +150,22 @@ exports.deleteProduct = async (req, res) => {
     res.json({ message: "Product deleted successfully" });
   } catch (error) {
     res.json({ error: "Unable to delete product" });
+  }
+};
+
+/**
+ * Seed products
+ *
+ * @param {Request} req
+ * @param {Response} res
+ */
+exports.seedProducts = async (req, res) => {
+  // Create products
+  const newProducts = await ProductModel.insertMany(seedData);
+
+  if (newProducts) {
+    res.status(201).json({ message: "Products created successfuly" });
+  } else {
+    res.status(400).json({ error: "Invalid product data received" });
   }
 };
