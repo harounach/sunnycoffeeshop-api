@@ -29,7 +29,7 @@ app.get("/", (req, res) => {
   res.send("Hello, World!");
 });
 
-app.use("/auth", userRoute);
+app.use("/api/users", userRoute);
 app.use("/api/products", productRoute);
 app.use("/api/reviews", reviewRoute);
 app.use("/api/orders", orderRoute);

@@ -10,8 +10,25 @@ const { calculateItemsPrice } = require("../utils/orderUtils");
  * @param {Response} res
  */
 exports.getOrders = async (req, res) => {
-  const orders = await OrderModel.find().lean().exec();
-  res.status(200).json({ message: "Get orders", data: orders });
+  const { perpage = 8, page = 1, order = -1 } = req.query;
+
+  const orders = await OrderModel.find()
+    .sort({ createdAt: order })
+    .limit(perpage * 1)
+    .skip((page - 1) * perpage)
+    .lean()
+    .exec();
+
+  const count = await OrderModel.countDocuments();
+  const pages = Math.ceil(count / perpage);
+
+  res.status(200).json({
+    message: "Get orders",
+    pages,
+    page,
+    data: orders,
+    count,
+  });
 };
 
 /**
@@ -40,6 +57,37 @@ exports.getSingleOrder = async (req, res) => {
   } catch (error) {
     res.status(400).json({ error: "Invalid order data received" });
   }
+};
+
+/**
+ * Get user orders
+ *
+ * @param {Request} req
+ * @param {Response} res
+ */
+exports.getUserOrders = async (req, res) => {
+  const { id } = req.params;
+  const { perpage = 8, page = 1, order = -1 } = req.query;
+
+  const orders = await OrderModel.find({ user: mongoose.Types.ObjectId(id) })
+    .sort({ createdAt: order })
+    .limit(perpage * 1)
+    .skip((page - 1) * perpage)
+    .lean()
+    .exec();
+
+  const count = await OrderModel.countDocuments({
+    user: mongoose.Types.ObjectId(id),
+  });
+  const pages = Math.ceil(count / perpage);
+
+  res.status(200).json({
+    message: "Get user orders",
+    pages,
+    page,
+    data: orders,
+    count,
+  });
 };
 
 /**
@@ -75,12 +123,17 @@ exports.createOrder = async (req, res) => {
       totalPrice,
     });
 
+    console.log(newOrder);
+
     if (newOrder) {
-      res.status(201).json({ message: "Order created successfuly" });
+      res
+        .status(201)
+        .json({ message: "Order created successfuly", data: newOrder });
     } else {
       res.status(400).json({ error: "Invalid order data received" });
     }
-  } catch (error) {
+  } catch (err) {
+    console.log(err);
     res.status(400).json({ error: "Unable to create order" });
   }
 };
@@ -109,9 +162,9 @@ exports.deleteOrder = async (req, res) => {
     }
 
     await orderToDelete.deleteOne();
-    res.json({ message: "Order deleted successfully" });
+    res.status(200).json({ message: "Order deleted successfully" });
   } catch (error) {
-    res.json({ error: "Unable to delete order" });
+    res.status(400).json({ error: "Unable to delete order" });
   }
 };
 
@@ -123,6 +176,7 @@ exports.deleteOrder = async (req, res) => {
  */
 exports.markOrderAsPaid = async (req, res) => {
   const { id } = req.params;
+
   // Validate data
   if (!id) {
     return res.status(400).json({ error: "Order id is required" });
@@ -141,7 +195,7 @@ exports.markOrderAsPaid = async (req, res) => {
     orderToPay.isPaid = true;
     orderToPay.paidAt = new Date();
     await orderToPay.save();
-    res.json({ message: "Order paid successfully" });
+    res.status(200).json({ message: "Order paid successfully" });
   } catch (error) {
     res.status(400).json({ error: "Unable to pay order" });
   }
@@ -155,6 +209,7 @@ exports.markOrderAsPaid = async (req, res) => {
  */
 exports.markOrderAsDelivered = async (req, res) => {
   const { id } = req.params;
+
   // Validate data
   if (!id) {
     return res.status(400).json({ error: "Order id is required" });
@@ -173,7 +228,7 @@ exports.markOrderAsDelivered = async (req, res) => {
     orderToDeliver.isDelivered = true;
     orderToDeliver.deliveredAt = new Date();
     await orderToDeliver.save();
-    res.json({ message: "Order delivered successfully" });
+    res.status(200).json({ message: "Order delivered successfully" });
   } catch (error) {
     res.status(400).json({ error: "Unable to deliver order" });
   }

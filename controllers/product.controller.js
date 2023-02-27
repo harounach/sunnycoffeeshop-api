@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const { Request, Response } = require("express");
 const ProductModel = require("../models/product.model");
 const { seedData } = require("../utils/data");
@@ -9,12 +10,17 @@ const { seedData } = require("../utils/data");
  * @param {Response} res
  */
 exports.getProducts = async (req, res) => {
-  const { search, perpage = 8, page = 1, filter, order = -1 } = req.query;
+  let { q, perpage = 8, page = 1, filter, order = -1 } = req.query;
+  console.log(req.query);
 
-  const searchFilter = search
+  page = Number(page);
+  perpage = Number(perpage);
+  order = Number();
+
+  const searchFilter = q
     ? {
         title: {
-          $regex: search,
+          $regex: q,
           $options: "i",
         },
       }
@@ -33,6 +39,7 @@ exports.getProducts = async (req, res) => {
     pages,
     page,
     data: products,
+    count,
   });
 };
 
@@ -155,10 +162,91 @@ exports.deleteProduct = async (req, res) => {
       return res.status(400).json({ error: "Product not found" });
     }
 
-    await productToDelete.deleteOne();
-    res.json({ message: "Product deleted successfully" });
+    const deletedProduct = await productToDelete.deleteOne();
+    res.json({ message: "Product deleted successfully", data: deletedProduct });
   } catch (error) {
     res.json({ error: "Unable to delete product" });
+  }
+};
+
+/**
+ * Get favorite products
+ *
+ * @param {Request} req
+ * @param {Response} res
+ */
+exports.getFavoriteProducts = async (req, res) => {
+  const { userId } = req.params;
+  try {
+    const favoriteProducts = await ProductModel.find({
+      favoritedBy: userId,
+    })
+      .lean()
+      .exec();
+
+    res
+      .status(200)
+      .json({ message: "Get favorite products", data: favoriteProducts });
+  } catch (err) {
+    console.log(err);
+    res.status(400).json({ error: "Unable to get favoirte products" });
+  }
+};
+
+/**
+ * Add favorite product
+ *
+ * @param {Request} req
+ * @param {Response} res
+ */
+exports.addFavoriteProduct = async (req, res) => {
+  const { productId, userId } = req.params;
+  try {
+    const favoredProduct = await ProductModel.findById(productId);
+    // Check if the user already favored this product
+    if (favoredProduct.favoritedBy.includes(userId)) {
+      return res
+        .status(400)
+        .json({ error: "You already favored this product" });
+    }
+    favoredProduct.favoritedBy.push(userId);
+    await favoredProduct.save();
+    res.status(200).json({ message: "Product added to favoirte" });
+  } catch (err) {
+    console.log(err);
+    res.status(400).json({ error: "Unable to add product to favoirte" });
+  }
+};
+
+/**
+ * Delete favorite product
+ *
+ * @param {Request} req
+ * @param {Response} res
+ */
+exports.deleteFavoriteProduct = async (req, res) => {
+  const { productId, userId } = req.params;
+  try {
+    const favoredProduct = await ProductModel.findById(productId);
+    // Check if the user already favored this product
+    if (!favoredProduct.favoritedBy.includes(userId)) {
+      return res
+        .status(400)
+        .json({ error: "You did not favored this product before" });
+    }
+
+    // filter favoritedBy array to exlude userId
+    favoredProduct.favoritedBy = favoredProduct.favoritedBy.filter((id) => {
+      return id.toString() !== userId;
+    });
+
+    favoredProduct.save();
+    res
+      .status(200)
+      .json({ message: "Product deleted from favorite successfully" });
+  } catch (err) {
+    console.log(err);
+    res.status(400).json("Unable to delete product from favorite");
   }
 };
 

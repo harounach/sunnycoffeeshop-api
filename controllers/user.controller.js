@@ -7,6 +7,32 @@ const {
 } = require("../utils/auth");
 
 /**
+ * Get users
+ *
+ * @param {Request} req
+ * @param {Response} res
+ */
+exports.getUsers = async (req, res) => {
+  const { perpage = 8, page = 1, order = -1 } = req.query;
+  const users = await UserModel.find()
+    .sort({ createAt: order })
+    .limit(perpage * 1)
+    .skip((page - 1) * perpage)
+    .select("-password")
+    .lean()
+    .exec();
+  const count = await UserModel.countDocuments();
+  const pages = Math.ceil(count / perpage);
+  res.json({
+    message: "Get users",
+    pages,
+    page,
+    data: users,
+    count,
+  });
+};
+
+/**
  * Register user
  *
  * @param {Request} req

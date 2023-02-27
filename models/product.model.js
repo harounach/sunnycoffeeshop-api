@@ -8,6 +8,7 @@ const productSchema = new mongoose.Schema(
     image: { type: String, required: true },
     rating: { type: Number, default: 0 },
     slug: { type: String, required: true },
+    favoritedBy:  [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }]
   },
   {
     timestamps: true,
