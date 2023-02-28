@@ -32,7 +32,14 @@ exports.getReviews = async (req, res) => {
       .lean()
       .exec();
 
-    res.json({ message: "Get reviews", data: reviews });
+    const count = reviews.length;
+    const ratingSum = reviews.reduce((acc, review) => {
+      return acc + review.rating;
+    }, 0);
+
+    const rating = (ratingSum / count).toFixed(2);
+
+    res.json({ message: "Get reviews", data: reviews, count, rating });
   } catch (error) {
     res.status(400).json({ error: "Unable to get reviews for this product" });
   }
@@ -69,7 +76,9 @@ exports.createReview = async (req, res) => {
     });
 
     if (newReview) {
-      res.status(201).json({ message: "Review created successfuly" });
+      res
+        .status(201)
+        .json({ message: "Review created successfuly", data: newReview });
     } else {
       res.status(400).json({ error: "Invalid review data received" });
     }
@@ -101,8 +110,8 @@ exports.deleteReview = async (req, res) => {
       return res.status(400).json({ error: "Review not found" });
     }
 
-    await reviewToDelete.deleteOne();
-    res.json({ message: "Review deleted successfully" });
+    const deletedReview = await reviewToDelete.deleteOne();
+    res.json({ message: "Review deleted successfully", data: deletedReview });
   } catch (error) {
     res.json({ error: "Unable to delete review" });
   }

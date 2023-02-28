@@ -123,8 +123,6 @@ exports.createOrder = async (req, res) => {
       totalPrice,
     });
 
-    console.log(newOrder);
-
     if (newOrder) {
       res
         .status(201)
@@ -161,8 +159,8 @@ exports.deleteOrder = async (req, res) => {
       return res.status(400).json({ error: "Order not found" });
     }
 
-    await orderToDelete.deleteOne();
-    res.status(200).json({ message: "Order deleted successfully" });
+    const deletedOrder = await orderToDelete.deleteOne();
+    res.status(200).json({ message: "Order deleted successfully", data: deletedOrder });
   } catch (error) {
     res.status(400).json({ error: "Unable to delete order" });
   }

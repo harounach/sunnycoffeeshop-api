@@ -11,7 +11,6 @@ const { seedData } = require("../utils/data");
  */
 exports.getProducts = async (req, res) => {
   let { q, perpage = 8, page = 1, filter, order = -1 } = req.query;
-  console.log(req.query);
 
   page = Number(page);
   perpage = Number(perpage);
