@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const reviewModel = require("./review.model");
 
 const productSchema = new mongoose.Schema(
   {
@@ -13,6 +14,11 @@ const productSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+productSchema.pre("deleteOne", { document: true }, async function (next) {
+  await reviewModel.deleteMany({ product: this._id });
+  next();
+});
 
 const productModel =
   mongoose.models.Product || mongoose.model("Product", productSchema);

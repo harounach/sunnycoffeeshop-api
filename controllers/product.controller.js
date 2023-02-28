@@ -94,7 +94,7 @@ exports.createProduct = async (req, res) => {
   });
 
   if (newProduct) {
-    res.status(201).json({ message: "Product created successfuly" });
+    res.status(201).json({ message: "Product created successfuly", data: newProduct });
   } else {
     res.status(400).json({ error: "Invalid product data received" });
   }
