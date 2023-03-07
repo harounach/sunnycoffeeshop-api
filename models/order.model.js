@@ -14,6 +14,7 @@ const shippingSchema = new mongoose.Schema({
 // Payment schema
 const paymentSchema = new mongoose.Schema({
   paymentMethod: { type: String, required: true },
+  sessionId: {type: String},
 });
 
 // Order item schema

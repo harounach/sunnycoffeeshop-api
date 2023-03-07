@@ -231,3 +231,37 @@ exports.markOrderAsDelivered = async (req, res) => {
     res.status(400).json({ error: "Unable to deliver order" });
   }
 };
+
+/**
+ * Save stripe checkout session
+ *
+ * @param {Request} req
+ * @param {Response} res
+ */
+exports.saveSession = async (req, res) => {
+  const { id } = req.params;
+  const { sessionId } = req.body;
+
+  // Validate data
+  if (!id || !sessionId) {
+    return res.status(400).json({ error: "All fields are required" });
+  }
+
+  try {
+    // Find the order with this id
+    const orderToSaveSession = await OrderModel.findById(id).exec();
+
+    // Check if order exists
+    if (!orderToSaveSession) {
+      return res.status(400).json({ error: "Order not found" });
+    }
+
+    // Now save the session id
+    orderToSaveSession.payment.sessionId = sessionId;
+    await orderToSaveSession.save();
+    res.status(200).json({ message: "Order session saved successfully" });
+  } catch (error) {
+    res.status(400).json({ error: "Unable to save order session" });
+  }
+};
+

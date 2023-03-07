@@ -14,6 +14,25 @@ exports.getSummary = async (req, res) => {
     const productCount = await ProductModel.countDocuments();
     const orderCount = await OrderModel.countDocuments();
     const userCount = await UserModel.countDocuments();
+    // const orders = await OrderModel.find()
+    //   .sort({ itemsPrice: 1 })
+    //   .select({
+    //     _id: 1,
+    //     orderItems: 1,
+    //   })
+    //   .limit(5);
+
+    // const orderItems = orders.map((order) => {
+    //   return order.orderItems;
+    // });
+
+    // const items = [].concat(...orderItems);
+
+    // console.log(items);
+
+    // // const orderProducts = await ProductModel.find({ orders[0].orderItems })
+
+    // // console.log(orders[0]);
 
     const ordersPriceGroup = await OrderModel.aggregate([
       {

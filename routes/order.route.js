@@ -21,5 +21,8 @@ router.route("/:id/pay").patch(orderController.markOrderAsPaid);
 /** @route /orders/:id/deliver */
 router.route("/:id/deliver").patch(orderController.markOrderAsDelivered);
 
+/** @route /orders/:id/session */
+router.route("/:id/session").patch(orderController.saveSession);
+
 
 module.exports = router;
