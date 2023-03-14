@@ -36,8 +36,6 @@ exports.payWithStripe = async (req, res) => {
       cancel_url: `${redirectUrl}/?canceled=true`,
     });
 
-    console.log(session);
-
     res.status(200).json({url: session.url, sessionId: session.id});
   } catch (err) {
     res.status(err.statusCode || 500).json({error: err.message});

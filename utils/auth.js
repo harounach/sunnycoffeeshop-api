@@ -10,12 +10,13 @@ const JWT_SECRET = process.env.JWT_SECRET;
  * @param {string} name
  * @param {string} email
  */
-exports.generateToken = (id, name, email) => {
+exports.generateToken = (id, name, email, admin) => {
   return jwt.sign(
     {
       id,
       name,
       email,
+      admin,
     },
     JWT_SECRET,
     {

@@ -13,6 +13,7 @@ const reviewSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
+    collection: "scs_reviews"
   }
 );
 

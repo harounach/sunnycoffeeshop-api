@@ -47,6 +47,7 @@ const orderSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
+    collection: "scs_orders"
   }
 );
 
