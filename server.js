@@ -11,6 +11,7 @@ const reviewRoute = require("./routes/review.route");
 const orderRoute = require("./routes/order.route");
 const summaryRoute = require("./routes/summary.route");
 const paymentRoute = require("./routes/payment.route");
+const testRoute = require("./routes/test.route");
 const app = express();
 
 const PORT = process.env.PORT || 4000;
@@ -37,6 +38,7 @@ app.use("/api/reviews", reviewRoute);
 app.use("/api/orders", orderRoute);
 app.use("/api/summary", summaryRoute);
 app.use("/api/payments", paymentRoute);
+app.use("/api/test", testRoute);
 
 app.listen(PORT, () => {
   console.log(`Server listening, visit: http://localhost:${PORT}`);
