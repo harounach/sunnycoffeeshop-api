@@ -43,6 +43,25 @@ exports.getProducts = async (req, res) => {
 };
 
 /**
+ * Get featured products
+ *
+ * @param {Request} req
+ * @param {Response} res
+ */
+exports.getFeaturedProducts = async (req, res) => {
+  const featuredProducts = await ProductModel.find()
+    .sort({favoritedBy: 1})
+    .limit(4)
+    .lean()
+    .exec();
+
+  res.status(200).json({
+    message: "Get featured products",
+    data: featuredProducts,
+  })
+}
+
+/**
  * Get single product
  *
  * @param {Request} req

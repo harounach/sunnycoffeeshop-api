@@ -7,6 +7,9 @@ const router = Router();
 /** @route /api/products */
 router.route("/").get(productController.getProducts);
 
+/** @route /api/products/featured */
+router.route("/featured").get(productController.getFeaturedProducts);
+
 /** @route /api/products/:id */
 router.route("/:id").get(productController.getSingleProduct);
 

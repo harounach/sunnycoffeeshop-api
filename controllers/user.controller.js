@@ -76,7 +76,7 @@ exports.registerUser = async (req, res) => {
       name: newUser.name,
       email: newUser.email,
       admin: newUser.admin,
-      createAt: newUser.createdAt,
+      createdAt: newUser.createdAt,
       accessToken,
     };
 
@@ -122,7 +122,7 @@ exports.loginUser = async (req, res) => {
     name: foundUser.name,
     email: foundUser.email,
     admin: foundUser.admin,
-    createAt: foundUser.createdAt,
+    createdAt: foundUser.createdAt,
     accessToken,
   };
 

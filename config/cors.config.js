@@ -1,6 +1,6 @@
 const allowedOrigins = [
   "http://localhost:3000",
-  "https://sunnycoffeeshop.vercel.app/",
+  "https://sunnycoffeeshop.vercel.app",
 ];
 
 const corsOptions = {
